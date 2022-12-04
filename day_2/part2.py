@@ -1,4 +1,4 @@
-with open("2.txt", "r") as dataFile:
+with open("data.in", "r") as dataFile:
     
     line = dataFile.readline()
 
