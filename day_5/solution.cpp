@@ -12,32 +12,6 @@ using namespace std;
 #define CRATE_TYPE map<int, stack<char>> 
 #define INSTRUCTION_TYPE vector<vector<int>>
 
-// Helper functions
-template<class T>
-void printV(vector<T>& v) {
-    cout << "{";
-    for (auto a : v) {
-        cout << a << ",";
-    };
-    cout << "}" << endl;
-};
-
-template<class T>
-void printS(stack<T>& s) {
-    vector<T> tmp;
-    while(!s.empty()) {
-        tmp.insert(tmp.begin(), s.top());
-        s.pop();
-    }
-    cout << "{";
-    for (auto i : tmp) {
-        cout << i << ",";
-        s.push(i);
-    };
-    cout << "}" << endl;
-
-}
-
 // Parse inputs
 pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "data.in") {
     CRATE_TYPE crates;
@@ -99,7 +73,7 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "data.in") {
     return {crates, instructions};
 };
 
-void part1() {
+void solve(int part=1) {
     auto v = parseInput();
     CRATE_TYPE crates = v.first;
     INSTRUCTION_TYPE instructions = v.second;
@@ -109,10 +83,23 @@ void part1() {
     for (auto i : instructions) {
         int no = i[0], frm = i[1], to = i[2];
 
-        for (int _ = 0; _ < no; ++_) {
-            char tmp = crates[frm].top();
-            crates[frm].pop();
-            crates[to].push(tmp);
+        // Solve for each parts
+        if (part == 1) {
+            for (int _ = 0; _ < no; ++_) {
+                char tmp = crates[frm].top();
+                crates[frm].pop();
+                crates[to].push(tmp);
+            }
+        } else if (part == 2) {
+            vector<char> tmpList;
+            for (int _ = 0; _ < no; ++_) {
+                char tmp = crates[frm].top();
+                crates[frm].pop();
+                tmpList.insert(tmpList.begin(), tmp);
+            }
+            for (int crt : tmpList) {
+                crates[to].push(crt);
+            }
         }
     };
 
@@ -122,13 +109,12 @@ void part1() {
         ans += x.second.top();
     }
 
-    cout << "Part1 = " << ans << endl;
+    cout << "Part " << part << " = " << ans << endl;
 }
 
 int main() {
-    part1();
-    
-
+    solve(1);
+    solve(2);
 
     return 0;
 }
