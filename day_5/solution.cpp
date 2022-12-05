@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include <algorithm>
 #include <utility>
 #include <map>
 using namespace std;
@@ -40,7 +39,7 @@ void printS(stack<T>& s) {
 }
 
 // Parse inputs
-pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
+pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "data.in") {
     CRATE_TYPE crates;
     INSTRUCTION_TYPE instructions;
 
@@ -64,7 +63,7 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
     }
 
     // We need to reverse each stack
-    for (auto a : crates) {
+    for (auto &a : crates) {
         vector<char> tmp;
         while(!a.second.empty()) {
             tmp.push_back(a.second.top());
@@ -80,8 +79,8 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
         getline(dataFile, line);
         if (line == "") continue;
 
+        // Parse only numbers
         stringstream ss(line);
-
         string tmp;
         vector<int> inst;
         int n;
@@ -100,20 +99,34 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
     return {crates, instructions};
 };
 
-int main() {
-
+void part1() {
     auto v = parseInput();
+    CRATE_TYPE crates = v.first;
+    INSTRUCTION_TYPE instructions = v.second;
 
-    for (auto x: v.first) {
-        cout << x.first << " = ";
-        printS(x.second);
+
+    // Go through each instructions
+    for (auto i : instructions) {
+        int no = i[0], frm = i[1], to = i[2];
+
+        for (int _ = 0; _ < no; ++_) {
+            char tmp = crates[frm].top();
+            crates[frm].pop();
+            crates[to].push(tmp);
+        }
+    };
+
+    string ans;
+
+    for (auto x: crates) {
+        ans += x.second.top();
     }
 
-    for (auto s: v.second) {
-        printV(s);
-    }
+    cout << "Part1 = " << ans << endl;
+}
 
-
+int main() {
+    part1();
     
 
 
