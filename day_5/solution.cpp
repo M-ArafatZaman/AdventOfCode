@@ -76,7 +76,7 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
     }
 
     // Get instructions
-    while (dataFile) {
+    while (!dataFile.eof()) {
         getline(dataFile, line);
         if (line == "") continue;
 
@@ -103,6 +103,15 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
 int main() {
 
     auto v = parseInput();
+
+    for (auto x: v.first) {
+        cout << x.first << " = ";
+        printS(x.second);
+    }
+
+    for (auto s: v.second) {
+        printV(s);
+    }
 
 
     
