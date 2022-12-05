@@ -80,8 +80,6 @@ def printCrates(dct):
 
 def part1():
     crates, instructions = getData("data.in")
-    
-    printCrates(crates)
 
     for i in instructions:
 
@@ -103,9 +101,29 @@ def part1():
 
 
 def part2():
-    data = getData("TD.in")
+    crates, instructions = getData("data.in")
+
+    for i in instructions:
+
+        no, frm, to = i 
+        frm = str(frm)
+        to = str(to)
+
+        # Standard copy and paste will do
+        removed = crates[frm][len(crates[frm])-no:]
+        crates[frm] = crates[frm][:len(crates[frm])-no]
+        crates[to] += removed
+
+    ans = ""
+
+    for k in range(1, len(crates.keys())+1):
+        ans += crates[str(k)][len(crates[str(k)])-1]
+
+    print(ans)
 
 
 if __name__ == "__main__":
+    print("Part 1 -> ")
     part1()
+    print("Part 2 -> ")
     part2()
