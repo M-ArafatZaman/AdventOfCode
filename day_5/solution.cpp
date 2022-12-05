@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <stack>
@@ -46,9 +47,9 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
     // Open file
     ifstream dataFile{fName};
 
+    string line;
     // Read and parse each line
     while (dataFile) {
-        string line;
         getline(dataFile, line);
 
         if (line[1] == '1') break; // End of crates
@@ -72,28 +73,40 @@ pair<CRATE_TYPE, INSTRUCTION_TYPE> parseInput(string fName = "TD.in") {
         for (auto i : tmp) {
             a.second.push(i);
         };
-        cout << a.first << " = ";
-        printS(a.second);
+    }
+
+    // Get instructions
+    while (dataFile) {
+        getline(dataFile, line);
+        if (line == "") continue;
+
+        stringstream ss(line);
+
+        string tmp;
+        vector<int> inst;
+        int n;
+        while (ss >> tmp) {
+            try {
+                n = stoi(tmp);
+            } catch (...) {
+                continue;
+            };
+            inst.push_back(n);
+        };
+        // Load instructions
+        instructions.push_back(inst);
     }
 
     return {crates, instructions};
 };
 
 int main() {
-    INSTRUCTION_TYPE s = {
-        {1,2,3}
-    };
 
     auto v = parseInput();
 
-    /* stack<int> a;
-    a.push(1);
-    a.push(2);
-    a.push(3);
-    a.push(4);
 
-    printS(a);
-    printS(a); */
+    
+
 
     return 0;
 }
