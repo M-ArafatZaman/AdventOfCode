@@ -13,37 +13,30 @@ def getData(fName):
 
     # Load crates
     i = 0
-    t_cols = 0
     while "[" in data[i]: # (HACKY) Is a crate
 
         _crates = re.findall("[A-Z]", data[i])
         # Get each index in string and calculate col
         for cr in _crates:
-            cr_i = data[i].index(cr)
-            col = getCol(cr_i)
-
-            if col > t_cols:
-                t_cols = col # Keep a record of total columns
+            cr_i = data[i].index(cr)    # Each crate index in the string
+            col = ((cr_i - 1)//4) + 1   # Calculate the col based on the index
 
             # Load but prepend since we are scanning from top to bottom
             col_crates: List[str] = crates.get(str(col), [])
             col_crates = [cr] + col_crates 
             crates[str(col)] = col_crates
 
-            # Remove the crate from the dataline
+            # Remove the crate from the string
             data[i] = data[i][:cr_i] + " " + data[i][cr_i+1:]
 
         i += 1
 
+    # Skip the next 2 lines
     i += 2
 
     instructions: List[List[int]] = []
-
-    while i < len(data):
-        # "move 2 from 1 to 7"
-        
-        #no, frm, to = re.findall("[1-9]", data[i])
-        
+    # Get Instructions
+    while i < len(data):       
         # Extract the parameters
         matches = []
         strBuf = ""        
@@ -69,26 +62,18 @@ def getData(fName):
 
     return crates, instructions
 
-def getCol(i):
-    # Arithmetic series to calculate cols
-    return ((i - 1)//4) + 1
-
-def printCrates(dct):
-
-    for i in range(1, len(dct.keys())+1):
-        print(i , "==", dct[str(i)])
 
 def part1():
     crates, instructions = getData("data.in")
 
     for i in instructions:
-
+        # Number of crates, from coloum, to column
         no, frm, to = i 
         frm = str(frm)
         to = str(to)
 
         # Move
-        for __c in range(no):
+        for _ in range(no):
             crt = crates[frm].pop()
             crates[to].append(crt)
 
@@ -104,7 +89,7 @@ def part2():
     crates, instructions = getData("data.in")
 
     for i in instructions:
-
+        # Number of crates, from coloum, to column
         no, frm, to = i 
         frm = str(frm)
         to = str(to)
