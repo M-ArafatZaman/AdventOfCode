@@ -8,7 +8,7 @@ def parseInput(fName="input.in"):
     return data[0]
 
 def isStrUnique(string):
-    return len(set(list(string))) == len(string)
+    return len(set(string)) == len(string)
 
 def solve(part=1):
     if part == 1: BUFFER_LEN = 4
