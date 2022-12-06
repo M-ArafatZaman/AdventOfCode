@@ -16,14 +16,15 @@ def solve(part=1):
 
     stream = parseInput("input.in")
     buffer = ""
+    # Iterate through the buffer stream
     for i in range(len(stream)):
         buffer += stream[i]
         # Check if all chars are unique
         if len(buffer) == BUFFER_LEN and isStrUnique(buffer):
             return i+1
         # Remove prev characters that exceed the buffer limit
-        while len(buffer) >= BUFFER_LEN:
-            buffer = buffer[1:]
+        if len(buffer) >= BUFFER_LEN:
+            buffer = buffer[len(buffer)-BUFFER_LEN+1:]
 
 def main():
     print("Part 1 =>", solve(1))
