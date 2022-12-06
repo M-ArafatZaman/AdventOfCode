@@ -4,8 +4,7 @@ def parseInput(fName="input.in"):
     Function to parse input files
     """
     with open(fName, "r") as dataFile:
-        data = dataFile.read().splitlines()
-    return data[0]
+        return dataFile.readline()
 
 def isStrUnique(string):
     return len(set(string)) == len(string)
