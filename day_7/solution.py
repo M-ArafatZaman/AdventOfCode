@@ -1,4 +1,4 @@
-
+# Directory class structure
 class Directory:
     def __init__(self, name, parent=None):
         self.name = name
@@ -35,6 +35,17 @@ def loadDirectory():
 
     return rootDir
 
+def part1(dirSizes):
+    return sum([i for i in dirSizes if i <= 100000])
+
+def part2(dirSizes):
+    dirSizes.sort()
+    rootDirSize = dirSizes[-1] # Root dir size is appended at the last
+    NEEDED = rootDirSize + 30000000 - 70000000
+    for i in dirSizes:
+        if i > NEEDED:
+            return i
+
 def solve():
     rootDir = loadDirectory()
     dirSizes = []
@@ -47,18 +58,8 @@ def solve():
 
     countDirSize(rootDir)
 
-    print(sum([i for i in dirSizes if i <= 100000]))
-
-    dirSizes.sort()
-    currTotalSize = dirSizes[-1]
-    TOTAL = 70000000
-    OS_SIZE = 30000000
-    NEEDED = OS_SIZE - (TOTAL - currTotalSize)
-    for i in dirSizes:
-        if i >= NEEDED:
-            print(i)
-            break
-
+    print("Part 1 =>", part1(dirSizes))
+    print("Part 2 =>", part2(dirSizes))
 
 if __name__ == "__main__":
     solve()
