@@ -6,22 +6,11 @@ class Directory:
         self.subdirs = []
         self.files = []
 
-    def __str__(self):
-        return self.name
-    
-    def __repr__(self):
-        return self.__str__()
-
-def parseInput(fName="input.in"):
-    # List of each line
-    data = open(fName, "r").read().splitlines()
-    return data
-
 def loadDirectory():
-    data = parseInput("input.in")
+    data = open("input.in", "r").read().splitlines()
     
     rootDir = Directory("/")
-    # Iterate through each line, keep track of current directory, and check for ls
+    # Iterate through each line, keep track of current directory, and check for file sizes
     # CurrDir stores the current level directory
     currDir = None
     for l in data:
@@ -59,6 +48,16 @@ def solve():
     countDirSize(rootDir)
 
     print(sum([i for i in dirSizes if i <= 100000]))
+
+    dirSizes.sort()
+    currTotalSize = dirSizes[-1]
+    TOTAL = 70000000
+    OS_SIZE = 30000000
+    NEEDED = OS_SIZE - (TOTAL - currTotalSize)
+    for i in dirSizes:
+        if i >= NEEDED:
+            print(i)
+            break
 
 
 if __name__ == "__main__":
