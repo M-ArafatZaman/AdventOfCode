@@ -40,7 +40,8 @@ def part1(dirSizes):
 
 def part2(dirSizes):
     dirSizes.sort()
-    rootDirSize = dirSizes[-1] # Root dir size is appended at the last
+    # Root dir size is appended at the end of recursion stack
+    rootDirSize = dirSizes[-1] 
     NEEDED = rootDirSize + 30000000 - 70000000
     for i in dirSizes:
         if i > NEEDED:
