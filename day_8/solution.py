@@ -15,7 +15,8 @@ def solve():
 def transpose(matrix: T_GRID) -> T_GRID:
     return [list(i) for i in [*zip(*matrix)]]
 
-def getPrefix(grid: T_GRID) -> T_GRID: # Using a variant of prefix sum algorithm
+# This function calculates the maximum height of a tree from left to right
+def getPrefix(grid: T_GRID) -> T_GRID:
     prefix: T_GRID = []
     for r in range(len(grid)):
         tmp = []
@@ -27,12 +28,13 @@ def getPrefix(grid: T_GRID) -> T_GRID: # Using a variant of prefix sum algorithm
 
 def part1(grid: T_GRID):
     visible: T_GRID = len(grid) * 2 + len(grid) * 2 - 4
+    # Use rotation and matrix properties to calculate max height from every direction
     prefixLeft: T_GRID = getPrefix(grid)
     prefixRight: T_GRID = [r[::-1] for r in getPrefix([r[::-1] for r in grid])]
     grid_T: T_GRID = transpose(grid)
     prefixUp: T_GRID = transpose(getPrefix(grid_T))
     prefixDown: T_GRID = transpose([r[::-1] for r in getPrefix([r[::-1] for r in grid_T])])
-
+    # From every direction, compare with the prev max height.
     for r in range(1, len(grid)-1):
         for c in range(1, len(grid[r])-1):
             if grid[r][c] > prefixLeft[r][c-1] or grid[r][c] > prefixRight[r][c+1] or grid[r][c] > prefixUp[r-1][c] or grid[r][c] > prefixDown[r+1][c]:
@@ -40,7 +42,7 @@ def part1(grid: T_GRID):
     
     return visible
 
-# Creates a scenic grid from a given direction
+# Creates a grid that shows how many trees are visible from every direction
 def getScenicGrid(grid: T_GRID) -> T_GRID:
     nwGrd: T_GRID = []
     for r in range(len(grid)):
@@ -51,18 +53,19 @@ def getScenicGrid(grid: T_GRID) -> T_GRID:
             while i > 0 and grid[r][c] > grid[r][i-1]:
                 visibility += 1
                 i -= 1
-                if i == 0: visibility -= 1
+                if i == 0: visibility -= 1 # Edge trees have no visible trees
             tmp.append(visibility if c != 0 else 0)
         nwGrd.append(tmp)
     return nwGrd
 
 def part2(grid: T_GRID):
+    # Use rotation and matrix properties to calculate scenic grid from every direction
     scenicLeft: T_GRID = getScenicGrid(grid)
     scenicRight: T_GRID = [r[::-1] for r in getScenicGrid([r[::-1] for r in grid])]
     grid_T: T_GRID = transpose(grid)
     scenicUp: T_GRID = transpose(getScenicGrid(grid_T))
     scenicDown: T_GRID = transpose([r[::-1] for r in getScenicGrid([r[::-1] for r in grid_T])])
-
+    # Calculate scenic score for every tree, and get the max
     scenicScore: T_GRID = []
     for r in range(len(grid)):
         row = []
