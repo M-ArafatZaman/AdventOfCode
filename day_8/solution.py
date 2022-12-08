@@ -1,6 +1,6 @@
 from typing import List, TypeVar
 
-T_GRID = TypeVar("T_GRID", List[List[int]])
+T_GRID = TypeVar("T_GRID", bound=List[List[int]])
 
 def parseInput(fName="input.in"):
     rdata: List[str] = open(fName, "r").read().splitlines()
@@ -8,9 +8,9 @@ def parseInput(fName="input.in"):
     return grid
 
 def solve():
-    grid: T_GRID = parseInput("sample.in")
-    part1(grid)
-    part2(grid)
+    grid: T_GRID = parseInput("input.in")
+    #part1(grid)
+    print("PART 2 => ", part2(grid))
 
 def transpose(matrix: T_GRID) -> T_GRID:
     return [list(i) for i in [*zip(*matrix)]]
@@ -41,43 +41,39 @@ def part1(grid: T_GRID):
             if grid[r][c] > prefixLeft[r][c-1] or grid[r][c] > prefixRight[r][c+1] or grid[r][c] > prefixUp[r-1][c] or grid[r][c] > prefixDown[r+1][c]:
                 visible += 1
     
-    print(visible)
+    return visible
 
 # Creates a scenic grid from a given direction
 def getScenicGrid(grid: T_GRID):
-    nwGrd = []
+    nwGrd: T_GRID = []
     for r in range(len(grid)):
         tmp = []
-        highest = -99
-        highestDist = -1
-        for c in range(len(grid)):
-            highestDist += 1
-            if grid[r][c] > highest:
-                #highestDist = grid[r].index(highest)
-                highest = grid[r][c]
-                tmp.append(highestDist)
-                highestDist = 0
-            elif grid[r][c] <= grid[r][c-1]:
-                highestDist = 1
-                tmp.append(highestDist)
-            else:
-                tmp.append(highestDist)
-
+        for c in range(len(grid[r])):
+            i = c
+            visibility = 1
+            while i > 0 and grid[r][c] > grid[r][i-1]:
+                visibility += 1
+                i -= 1
+                if i == 0: visibility -= 1
+            tmp.append(visibility if c != 0 else 0)
         nwGrd.append(tmp)
     return nwGrd
 
-def part2(grid):
+def part2(grid: T_GRID):
     scenicLeft = getScenicGrid(grid)
     scenicRight = [r[::-1] for r in getScenicGrid([r[::-1] for r in grid])]
     grid_T = transpose(grid)
     scenicUp = transpose(getScenicGrid(grid_T))
     scenicDown = transpose([r[::-1] for r in getScenicGrid([r[::-1] for r in grid_T])])
 
-    printG(grid)
-    print()
-    printG(scenicLeft)
-
-
+    scenicScore: T_GRID = []
+    for r in range(len(grid)):
+        row = []
+        for c in range(len(grid[r])):
+            row.append(scenicLeft[r][c] * scenicRight[r][c] * scenicUp[r][c] * scenicDown[r][c])
+        scenicScore.append(row)
+    return max([max(r) for r in scenicScore])
+            
 
 if __name__ == "__main__":
     solve()
