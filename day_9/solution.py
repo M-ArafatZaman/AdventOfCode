@@ -1,5 +1,4 @@
 from collections import defaultdict
-from matplotlib import pyplot as plt
 
 # Type definitions
 class Point:
@@ -19,7 +18,7 @@ def parseInput(fName="input.in") -> list[tuple[str, int]]:
     return [(i[0], int(i[1])) for i in data]
 
 def solve():
-    data = parseInput("sample.in")
+    data = parseInput("input.in")
 
     # Starting points
     paths: PATHS = defaultdict(list)
@@ -28,11 +27,13 @@ def solve():
     [paths[i].append(f'{j.x},{j.y}') for i, j in enumerate(coords)]
     
     for move in data:
-        traceMove(move[0], move[1], paths, coords)
+        currSteps = 1
+        while currSteps <= move[1]:
+            traceMove(move[0], 1, paths, coords)
+            currSteps += 1
     
-    plot(paths[9])
-    #print(len(paths[9]))
-    
+    print("Part 1 ->", len(paths[1]))
+    print("Part 2 ->", len(paths[9]))
 
 def isInVicinity(A: Point, B: Point):
     return (abs(A.x - B.x) <= 1 and abs(A.y - B.y) <= 1)
@@ -60,18 +61,6 @@ def traceMove(direction, steps, paths: PATHS, coords: COORDS):
             key = f'{_tail.x},{_tail.y}'
             if key not in paths[i]:
                 paths[i].append(key)
-
-def plot(points: list[str]):
-    ps = [Point(int(i.split(",")[0]), int(i.split(",")[1])) for i in points]
-    xs = []
-    ys = []
-    for i in ps:
-        xs.append(i.x)
-        ys.append(i.y)
-
-    plt.plot(xs, ys, "o")
-
-    plt.show()
 
 if __name__ == "__main__":
     solve()
