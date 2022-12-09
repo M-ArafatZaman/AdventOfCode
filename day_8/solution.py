@@ -46,7 +46,7 @@ def part1(grid: T_GRID):
     
     return visible
 
-# Creates a grid that shows how many trees are visible from every direction
+# Creates a grid that shows how many trees are visible from left to right
 def getScenicGrid(grid: T_GRID) -> T_GRID:
     nwGrd: T_GRID = []
     for r in range(len(grid)):
