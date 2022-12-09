@@ -24,7 +24,7 @@ def getPrefix(grid: T_GRID) -> T_GRID:
     prefix: T_GRID = []
     for r in range(len(grid)):
         tmp = []
-        for c in range(len(grid)):
+        for c in range(len(grid[r])):
             if c == 0: tmp.append(grid[r][c])
             else:   tmp.append(max(grid[r][c], tmp[c-1]))
         prefix.append(tmp)
