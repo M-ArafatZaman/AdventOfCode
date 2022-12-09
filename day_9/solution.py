@@ -62,13 +62,13 @@ def traceMove(direction, steps, paths: PATHS, coords: COORDS):
                 paths[i].append(key)
 
 def plot(points: list[str]):
-    ps = [Point(i.split(",")[0], i.split(",")[1]) for i in points]
+    ps = [Point(int(i.split(",")[0]), int(i.split(",")[1])) for i in points]
     xs = []
     ys = []
     for i in ps:
         xs.append(i.x)
         ys.append(i.y)
-    
+
     plt.plot(xs, ys, "o")
 
     plt.show()
