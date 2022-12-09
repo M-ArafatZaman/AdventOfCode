@@ -1,6 +1,6 @@
-from typing import List, TypeVar
+from typing import List
 
-T_GRID = TypeVar("T_GRID", bound=List[List[int]])
+T_GRID = List[List[int]]
 
 def parseInput(fName="input.in"):
     rdata: List[str] = open(fName, "r").read().splitlines()
