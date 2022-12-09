@@ -1,4 +1,17 @@
 from collections import defaultdict
+from matplotlib import pyplot as plt
+
+# Type definitions
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __repr__(self):
+        return f"({self.x},{self.y})"
+        
+PATHS = dict[int, list[str]]
+COORDS = list[Point]
 
 def parseInput(fName="input.in") -> list[tuple[str, int]]:
     rdata: list[str] = open(fName, "r").read().splitlines()
@@ -6,47 +19,59 @@ def parseInput(fName="input.in") -> list[tuple[str, int]]:
     return [(i[0], int(i[1])) for i in data]
 
 def solve():
-    data = parseInput("input.in")
-    #data = parseInput("input.in")
+    data = parseInput("sample.in")
 
-    paths = defaultdict(int)
     # Starting points
-    H_x, H_y, T_x, T_y = 0,0,0,0
-    paths[f'{T_x},{T_y}'] = 1
+    paths: PATHS = defaultdict(list)
+    coords: COORDS = []
+    [coords.append(Point(0,0)) for _ in range(10)]
+    [paths[i].append(f'{j.x},{j.y}') for i, j in enumerate(coords)]
+    
     for move in data:
-        H_x, H_y, T_x, T_y = traceMove(paths, move[0], move[1], H_x, H_y, T_x, T_y)
+        traceMove(move[0], move[1], paths, coords)
     
-    print(len(paths.items()))
+    plot(paths[9])
+    #print(len(paths[9]))
     
 
-def isInVicinity(H_x, H_y, T_x, T_y):
-    return (abs(H_x - T_x) <= 1 and abs(H_y - T_y) <= 1)
+def isInVicinity(A: Point, B: Point):
+    return (abs(A.x - B.x) <= 1 and abs(A.y - B.y) <= 1)
 
-def traceMove(paths, direction, steps, H_x, H_y, T_x, T_y):
+def traceMove(direction, steps, paths: PATHS, coords: COORDS):
     sign = 1
     if direction == "L" or direction == "D": sign = -1
-
-    if direction == "U" or direction == "D": H_y += sign * steps
-    if direction == "R" or direction == "L": H_x += sign * steps
+    if direction == "U" or direction == "D": coords[0].y += sign * steps
+    if direction == "R" or direction == "L": coords[0].x += sign * steps
+    paths[0].append(f"{coords[0].x},{coords[0].y}")
     
-    # Start tracing
-    while not isInVicinity(H_x, H_y, T_x, T_y):
-        # Move x direction
-        if abs(H_x-T_x) >= 1:
-            T_x += 1 if (H_x-T_x) >= 1 else -1
+    # Trace for each points after the first one
+    for i in range(1, len(coords)):
+        _tail = coords[i]
+        _head = coords[i-1]
+        while not isInVicinity(_head, _tail):
+            # Move x direction
+            if abs(_head.x - _tail.x) >= 1:
+                _tail.x += 1 if (_head.x-_tail.x) >= 1 else -1
 
-        # Move y direction
-        if abs(H_y-T_y) >= 1:
-            T_y += 1 if (H_y-T_y) >= 1 else -1
+            # Move y direction
+            if abs(_head.y - _tail.y) >= 1:
+                _tail.y += 1 if (_head.y-_tail.y) >= 1 else -1
 
-        paths[f"{T_x},{T_y}"] += 1
+            key = f'{_tail.x},{_tail.y}'
+            if key not in paths[i]:
+                paths[i].append(key)
 
+def plot(points: list[str]):
+    ps = [Point(i.split(",")[0], i.split(",")[1]) for i in points]
+    xs = []
+    ys = []
+    for i in ps:
+        xs.append(i.x)
+        ys.append(i.y)
+    
+    plt.plot(xs, ys, "o")
 
-    return H_x, H_y, T_x, T_y
-
-
-
-
+    plt.show()
 
 if __name__ == "__main__":
     solve()
