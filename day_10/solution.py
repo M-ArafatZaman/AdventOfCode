@@ -50,8 +50,8 @@ def solve():
         # Draw Pixel
         pos_x = cycles % 40
         pos_y = cycles // 40
-        pixel = "."
-        if pos_x >= (x-1) and pos_x <= (x+1): pixel = "#"
+        pixel = " "
+        if pos_x >= (x-1) and pos_x <= (x+1): pixel = "\u2588"
         try:
             crt[pos_y][pos_x] = pixel  
         except:
