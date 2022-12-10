@@ -3,30 +3,50 @@ def parseInput(fName="input.in"):
     rdata  = open(fName, "r").read().splitlines()
     return [i.split(" ") for i in rdata]
 
+"""
+Use a 2nd order decorator as a base for the execution cycle 
+"""
+def executionCycle(dataset: list[list[str]]):
+    # func is executed after every cycle
+    def loader(func):
+        def wrapper(*args, **kwargs):
+            x = 1
+            cycles = 0
+            inAddExecution = False
+            i = 0
+            while i < len(dataset):
+                cycles += 1
+                if inAddExecution:
+                    i -= 1
+                    x += int(dataset[i][1])
+                    inAddExecution = False
+                elif dataset[i][0] == "addx":
+                    inAddExecution = True
+
+                # X register is the first parameter, the current cycle is the second parameter
+                func(x, cycles, *args, **kwargs)
+                i += 1
+
+        return wrapper
+    return loader
+
 def solve():
     data = parseInput("input.in")
-    part2(data)
+    
+    ## ========= Part 1 =========
+    signals = []
+    @executionCycle(data)
+    def part1(x, cycles):
+        if (cycles == 20) or (cycles > 20 and (cycles + 20) % 40 == 0):
+            signals.append(cycles * x)
+    part1()
+    print("PART 1 ->", sum(signals))
 
-def part2(data):
-    x = 1
-    cycles = 0
+    ## ========= Part 2 ==========
     WIDTH, HEIGHT = 40, 6
-    crt = [['-' for c in range(WIDTH)] for r in range(HEIGHT)] 
-    currRow = 0
-    i = 0 
-    inAddExcecution = False
-    while i < len(data):
-        if inAddExcecution:
-            cycles += 1
-            i -= 1
-            x += int(data[i][1])
-            inAddExcecution = False
-        elif data[i][0] == "addx":
-            inAddExcecution = True
-            cycles += 1
-        elif data[i][0] == "noop":
-            cycles += 1
-
+    crt = [["-" for c in range(WIDTH)] for r in range(HEIGHT)]
+    @executionCycle(data)
+    def part2(x, cycles):
         # Draw Pixel
         pos_x = cycles % 40
         pos_y = cycles // 40
@@ -35,42 +55,10 @@ def part2(data):
         try:
             crt[pos_y][pos_x] = pixel  
         except:
-            pass
-
-        if (cycles > 0 and cycles % 40 == 0):
-            currRow += 1
-        
-        i+= 1
-
-    [print(''.join(i)) for i in crt]
-    
-
-def part1(data):
-    x = 1
-    cycles = 0
-    signals = []
-    inAddExcecution = False
-    i = 0
-    while i < len(data):
-        if inAddExcecution:
-            cycles += 1
-            i -= 1
-            x += int(data[i][1])
-            inAddExcecution = False
-        elif data[i][0] == "addx":
-            inAddExcecution = True
-            cycles += 1
-        elif data[i][0] == "noop":
-            cycles += 1
-
-        if cycles == 20 or (cycles > 20 and (cycles + 20) % 40 == 0):
-            print(cycles, x)
-            signals.append(cycles * x)
-
-        i += 1
-
-    print(sum(signals))
-
+            pass 
+    part2()
+    print("PART 2 ->")
+    [print("".join(r)) for r in crt]
 
 if __name__ == "__main__":
     solve()
