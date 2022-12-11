@@ -1,4 +1,5 @@
 import re
+import copy
 
 ARITHMETIC_OPERATION = {
     "+": lambda old, n: old + n,
@@ -50,17 +51,23 @@ def parseInput(fName="input.in") -> list[Monkey]:
 
     return monkeys 
 
-def solve():
+def main():
     data = parseInput("input.in")
 
-    print(part2(data))
+    # Deep copy is used because objects and lists are immutable
+    print("PART 1 ->", solve(copy.deepcopy(data), 1))
+    print("PART 2 ->", solve(copy.deepcopy(data), 2))
 
-def part1(data: list[Monkey]):
-    listMonkeys: list[Monkey] = list(data) # Make a copy
-    round = 0
-    itemsInspected = [0] * len(data)
+def solve(listMonkeys: list[Monkey], part=1):
+    ROUNDS = 20 if part == 1 else 10000
+    # Calculate the MODULO for part 2
+    mods = [int(i.divisible) for i in listMonkeys]
+    mod = 1
+    for i in mods:
+        mod *= i
+    itemsInspected = [0] * len(listMonkeys)
     # Iterate through each rounds
-    for _ in range(20):
+    for _ in range(ROUNDS):
         # Iterate each monkey
         m = 0
         while m < len(listMonkeys):
@@ -70,7 +77,9 @@ def part1(data: list[Monkey]):
                 # Inspect
                 item = monkey.items[0]
                 item = monkey.operation(item, int(monkey.operationNum) if monkey.operationNum != "old" else item)
-                item = item//3
+                # For part 1, item level is managed by dividing by 3
+                # For part 2, item level is MODULE of the product of all "divisible" check operations
+                item = item//3 if part == 1 else item % mod
                 if item % int(monkey.divisible) == 0:
                     listMonkeys[monkey.monkeyIfTrue].items.append(item)
                 else:
@@ -84,38 +93,5 @@ def part1(data: list[Monkey]):
     itemsInspected.sort()
     return itemsInspected[-1] * itemsInspected[-2]
 
-def part2(data: list[Monkey]):
-    listMonkeys: list[Monkey] = list(data) # Make a copy
-    round = 0
-    itemsInspected = [0] * len(data)
-    # Calculate the modulo 
-    mods = [int(i.divisible) for i in listMonkeys]
-    mod = 1
-    for i in mods:
-        mod *= i
-    # Iterate through each rounds
-    for _ in range(10000):
-        # Iterate each monkey
-        m = 0
-        while m < len(listMonkeys):
-            monkey = listMonkeys[m]
-            # Iterate each item
-            while len(monkey.items) > 0:
-                # Inspect
-                item = monkey.items[0]
-                item = monkey.operation(item, int(monkey.operationNum) if monkey.operationNum != "old" else item)
-                item = item % mod
-                if item % int(monkey.divisible) == 0:
-                    listMonkeys[monkey.monkeyIfTrue].items.append(item)
-                else:
-                    listMonkeys[monkey.monkeyIfFalse].items.append(item)
-                monkey.items.pop(0)
-                # Count inspection
-                itemsInspected[m] += 1
-            m += 1
-
-    itemsInspected.sort()
-    return itemsInspected[-1] * itemsInspected[-2]
-
 if __name__ == "__main__":
-    solve()
+    main()
