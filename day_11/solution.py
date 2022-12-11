@@ -54,7 +54,8 @@ def parseInput(fName="input.in") -> list[Monkey]:
 def main():
     data = parseInput("input.in")
 
-    # Deep copy is used because objects and lists are immutable
+    # Deep copy is used because objects and lists are mutable
+    # Part 1 changes data if not deep copied
     print("PART 1 ->", solve(copy.deepcopy(data), 1))
     print("PART 2 ->", solve(copy.deepcopy(data), 2))
 
