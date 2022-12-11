@@ -51,13 +51,38 @@ def parseInput(fName="input.in") -> list[Monkey]:
     return monkeys 
 
 def solve():
-    data = parseInput("sample.in")
+    data = parseInput("input.in")
 
     part1(data)
 
 def part1(data: list[Monkey]):
-    listMonkeys = list(data) # Make a copy
-    
+    listMonkeys: list[Monkey] = list(data) # Make a copy
+    round = 0
+    itemsInspected = [0] * len(data)
+    # Iterate through each rounds
+    for _ in range(20):
+        # Iterate each monkey
+        m = 0
+        while m < len(listMonkeys):
+            monkey = listMonkeys[m]
+            # Iterate each item
+            while len(monkey.items) > 0:
+                # Inspect
+                item = monkey.items[0]
+                item = monkey.operation(item, int(monkey.operationNum) if monkey.operationNum != "old" else item)
+                item = item//3
+                if item % int(monkey.divisible) == 0:
+                    listMonkeys[monkey.monkeyIfTrue].items.append(item)
+                else:
+                    listMonkeys[monkey.monkeyIfFalse].items.append(item)
+                monkey.items.pop(0)
+                # Count inspection
+                itemsInspected[m] += 1
+            m += 1
+        
+        # Print for reference
+    itemsInspected.sort()
+    print(itemsInspected[-1] * itemsInspected[-2])          
 
 
 def part2():
