@@ -1,4 +1,5 @@
 import math
+from collections import deque
 
 # https://adventofcode.com/2022/day/12
 def parseInput(fName="input.in"):
@@ -7,56 +8,67 @@ def parseInput(fName="input.in"):
 
     start, end = [-1, -1], [-1,-1]
     # Find start and end, and convert to height map
-    for y in range(len(data)):
-        for x in range(len(data[y])):
-            if data[y][x] == "S":
-                start = [x,y]
-                data[y][x] = 0
-            elif data[y][x] == "E":
-                end = [x, y]
-                data[y][x] = ord('z') - ord('a')
+    for r in range(len(data)):
+        for c in range(len(data[r])):
+            if data[r][c] == "S":
+                start = [r,c]
+                data[r][c] = 0
+            elif data[r][c] == "E":
+                end = [r, c]
+                data[r][c] = ord('z') - ord('a') + 1
             else:
-                data[y][x] = ord(data[y][x]) - ord('a')
+                data[r][c] = ord(data[r][c]) - ord('a')
 
     return start, end, data
 
 def solve():
-    start, end, grid = parseInput("input.in")
-    dp: list[list[int]] = [[None for i in j] for j in grid]
-    dp[end[1]][end[0]] = 0
+    start, end, grid = parseInput("sample.in")
+    visited: list[list[bool]] = [[False for i in j] for j in grid]
     # print(start)
     # print(end)
-    # # [print(i) for i in grid]
-    # # [print(i) for i in dp]
-    print("Need to learn graph theory :(")
+    # [print(i) for i in grid]
+    # [print(i) for i in dp]
+    # print("Need to learn graph theory :(")
+    print(bfs(visited, start[0], start[1], end[0], end[1], grid))
+    
 
 
-def calculateSmallestStep(dp, x, y, ex, ey, grid):
-    if dp[x][y]: return dp[x][y]
+def bfs(visited, r, c, er, ec, grid):
+    DR = [0, 1, 0, -1]
+    DC = [1, 0, -1, 0]
 
-    if x == ex and y == ey:
-        return 0 
+    if visited[r][c]: return
+    visited[r][c] = True
 
-    dist = math.sqrt( math.pow(ex-x, 2) + math.pow(ey-y, 2) )
-    if dist <= 1 and ((x == ex) ^ (y == ey)):
-        if (grid[ey][ex] - grid[y][x]) <= 1:
-            dp[x][y] = 1
-            return dp[x][y]
-    else:
-        dx = ex-x
-        dy = ey-y
-        check_x, check_y = None, None
-        if dx > 0: check_x = x + 1
-        elif dx < 0: check_y = x - 1
-        if dy > 0: check_y = y + 1
-        elif dy < 0: check_y = y - 1
-
-        dp_x = calculateSmallestStep(dp, check_x, y, ex, ey, grid) if check_x else (len(grid)*len(grid[0])*2)
-        dp_y = calculateSmallestStep(dp, x, check_y, ex, ey, grid) if check_y else (len(grid)*len(grid[0])*2)
-
-        dp[x][y] = min(dp_x, dp_y) + 1
-        return dp[x][y]
+    # tuple[row, column, steps]
+    queue: deque[tuple[int, int, int]] = deque()
+    queue.append([r, c, 0])
+    steps = 0
+    foundMatch = False
+    while len(queue) > 0:
+        currNode = queue.popleft()
         
+        for i in range(4):
+            dr = currNode[0] + DR[i]
+            dc = currNode[1] + DC[i]
+
+            if dr < 0 or dc < 0 or dr >= len(grid) or dc >= len(grid[0]) or \
+                (grid[dr][dc] - grid[currNode[0]][currNode[1]]) > 1:
+                continue
+            elif not visited[dr][dc]:
+                visited[dr][dc] = True
+                queue.append([dr, dc, currNode[2]+1 ])
+                
+                if dr == er and dc == ec: 
+                    foundMatch = True
+                    break
+        
+        if foundMatch: break
+    a = [i[2] for i in queue]
+    a.sort()
+    print(a)
+    return queue[0][2] if len(queue) > 0 else -1
+
 def isOneStep(x, y, ex, ey, grid):
     dist = math.sqrt( math.pow(ex-x, 2) + math.pow(ey-y, 2) )
     if dist <= 1 and ((x == ex) ^ (y == ey)):
