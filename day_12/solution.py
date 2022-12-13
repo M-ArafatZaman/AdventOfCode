@@ -22,14 +22,9 @@ def parseInput(fName="input.in"):
     return start, end, data
 
 def solve():
-    start, end, grid = parseInput("sample.in")
+    start, end, grid = parseInput("input.in")
     visited: list[list[bool]] = [[False for i in j] for j in grid]
-    # print(start)
-    # print(end)
-    # [print(i) for i in grid]
-    # [print(i) for i in dp]
-    # print("Need to learn graph theory :(")
-    print(bfs(visited, start[0], start[1], end[0], end[1], grid))
+    print("PART 1 -> ", bfs(visited, start[0], start[1], end[0], end[1], grid))
     
 
 
@@ -43,7 +38,6 @@ def bfs(visited, r, c, er, ec, grid):
     # tuple[row, column, steps]
     queue: deque[tuple[int, int, int]] = deque()
     queue.append([r, c, 0])
-    steps = 0
     foundMatch = False
     while len(queue) > 0:
         currNode = queue.popleft()
@@ -66,14 +60,13 @@ def bfs(visited, r, c, er, ec, grid):
         if foundMatch: break
     a = [i[2] for i in queue]
     a.sort()
-    print(a)
-    return queue[0][2] if len(queue) > 0 else -1
-
-def isOneStep(x, y, ex, ey, grid):
-    dist = math.sqrt( math.pow(ex-x, 2) + math.pow(ey-y, 2) )
-    if dist <= 1 and ((x == ex) ^ (y == ey)):
-        return (grid[ey][ex] - grid[y][x]) <= 1
-    return False
+    
+    # For some reason if the len of a is greater than 1, the ans is steps - 1
+    # TODO: Figure out why
+    if len(a) > 0:
+        return a[0] if len(a) == 1 else a[0]-1
+    return -1
+    
 
 def part1():
     pass 
