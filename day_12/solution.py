@@ -21,7 +21,7 @@ def parseInput(fName="input.in"):
     return start, end, data
 
 def solve():
-    start, end, grid = parseInput("sample.in")
+    start, end, grid = parseInput("input.in")
 
     print("PART 1 -> ", part1(start, end, grid))
 
@@ -32,6 +32,9 @@ def bfs(visited, r, c, er, ec, grid, condition):
 
     if visited[r][c]: return
     visited[r][c] = True
+
+    # End value
+    endValue = grid[er][ec]
 
     # tuple[row, column, steps]
     queue: deque[tuple[int, int, int]] = deque()
@@ -51,7 +54,7 @@ def bfs(visited, r, c, er, ec, grid, condition):
                 visited[dr][dc] = True
                 queue.append([dr, dc, currNode[2]+1 ])
                 
-                if dr == er and dc == ec: 
+                if grid[dr][dc] == endValue: 
                     foundMatch = True
                     break
         
@@ -75,6 +78,7 @@ def part1(start, end, grid):
 
 def part2(start, end, grid):
     visited: list[list[bool]] = [[False for i in j] for j in grid]
+
     
 
 
