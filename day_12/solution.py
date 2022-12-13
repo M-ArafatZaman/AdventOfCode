@@ -1,4 +1,3 @@
-import math
 from collections import deque
 
 # https://adventofcode.com/2022/day/12
@@ -22,13 +21,12 @@ def parseInput(fName="input.in"):
     return start, end, data
 
 def solve():
-    start, end, grid = parseInput("input.in")
-    visited: list[list[bool]] = [[False for i in j] for j in grid]
-    print("PART 1 -> ", bfs(visited, start[0], start[1], end[0], end[1], grid))
-    
+    start, end, grid = parseInput("sample.in")
+
+    print("PART 1 -> ", part1(start, end, grid))
 
 
-def bfs(visited, r, c, er, ec, grid):
+def bfs(visited, r, c, er, ec, grid, condition):
     DR = [0, 1, 0, -1]
     DC = [1, 0, -1, 0]
 
@@ -47,7 +45,7 @@ def bfs(visited, r, c, er, ec, grid):
             dc = currNode[1] + DC[i]
 
             if dr < 0 or dc < 0 or dr >= len(grid) or dc >= len(grid[0]) or \
-                (grid[dr][dc] - grid[currNode[0]][currNode[1]]) > 1:
+                not condition(dr, dc, currNode[0], currNode[1], grid):
                 continue
             elif not visited[dr][dc]:
                 visited[dr][dc] = True
@@ -67,12 +65,18 @@ def bfs(visited, r, c, er, ec, grid):
         return a[0] if len(a) == 1 else a[0]-1
     return -1
     
+def part1(start, end, grid):
+    visited: list[list[bool]] = [[False for i in j] for j in grid]
+    
+    def condition(dr, dc, r, c, g):
+        return g[dr][dc] - g[r][c] <= 1
 
-def part1():
-    pass 
+    return bfs(visited, start[0], start[1], end[0], end[1], grid, condition)
 
-def part2():
-    pass
+def part2(start, end, grid):
+    visited: list[list[bool]] = [[False for i in j] for j in grid]
+    
+
 
 if __name__ == "__main__":
     solve()
