@@ -24,6 +24,7 @@ def solve():
     start, end, grid = parseInput("input.in")
 
     print("PART 1 -> ", part1(start, end, grid))
+    print("PART 2 -> ", part2(start, end, grid))
 
 
 def bfs(visited, r, c, er, ec, grid, condition):
@@ -61,7 +62,6 @@ def bfs(visited, r, c, er, ec, grid, condition):
         if foundMatch: break
     a = [i[2] for i in queue]
     a.sort()
-    
     # For some reason if the len of a is greater than 1, the ans is steps - 1
     # TODO: Figure out why
     if len(a) > 0:
@@ -79,6 +79,10 @@ def part1(start, end, grid):
 def part2(start, end, grid):
     visited: list[list[bool]] = [[False for i in j] for j in grid]
 
+    def condition(dr, dc, r, c, g):
+        return g[r][c] - g[dr][dc] <= 1
+
+    return bfs(visited, end[0], end[1], start[0], start[1], grid, condition)
     
 
 
