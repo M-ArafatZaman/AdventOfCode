@@ -1,4 +1,3 @@
-import os, time
 import copy
 
 def parseInput(fName="input.in"):
@@ -6,7 +5,6 @@ def parseInput(fName="input.in"):
 
     grid: list[list[str]] = [["+"]]
     # "+" is 500, 0
-
     # Construct grid dynamically
     for path in rdata:
         coords = [tuple(map(int ,i.strip().split(","))) for i in path.split("->")]
@@ -63,10 +61,10 @@ def parseInput(fName="input.in"):
 def solve():
     grid: list[list[str]] = parseInput("input.in")
     
-    #print("PART 1 ->", part1(copy.deepcopy(grid)))
+    print("PART 1 ->", simulateSands(copy.deepcopy(grid)))
     print("PART 2 ->", part2(copy.deepcopy(grid)))
 
-def part1(grid: list[list[str]]):
+def simulateSands(grid: list[list[str]]):
     sands = 0
     SOURCE_INDEX = grid[0].index("+")
     
@@ -105,7 +103,7 @@ def part1(grid: list[list[str]]):
                     sand_coord = [sand_row+1, sand_col+1]
                     moved = True
             
-            # Break out
+            # Check if it WILL be an infinite loop
             if sand_row == len(grid)-1 or \
                (sand_col == 0 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col+1] != " ")) or \
                (sand_col == len(grid[0])-1 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col-1] != " ")):
@@ -114,8 +112,7 @@ def part1(grid: list[list[str]]):
             
             if not moved: break
 
-
-        # Check if sands are within bounds
+        # Check if sands are in an infiniteloop, simulation is done
         if infiniteLoop: break
         sands += 1
 
@@ -134,7 +131,7 @@ def part2(grid: list[list[str]]):
         for row in grid:
             for _ in range(REQUIRED_RADIUS - SOURCE_INDEX + 2):
                 row.insert(0, " ")
-
+    # Append with new source position after prepend
     SOURCE_INDEX = grid[0].index("+")
     END_INDEX = len(grid[0])
     if SOURCE_INDEX + REQUIRED_RADIUS > END_INDEX:
@@ -145,7 +142,7 @@ def part2(grid: list[list[str]]):
     # Draw floor
     grid[len(grid)-1] = ["#" for _ in grid[0]]
 
-    return part1(grid)
+    return simulateSands(grid)
 
 if __name__ == "__main__":
     solve()
