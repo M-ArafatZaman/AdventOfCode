@@ -1,4 +1,5 @@
 import os, time
+import copy
 
 def parseInput(fName="input.in"):
     rdata = open(fName, "r").read().splitlines()
@@ -60,17 +61,22 @@ def parseInput(fName="input.in"):
     return grid
 
 def solve():
-    grid: list[list[str]] = parseInput("sample.in")
+    grid: list[list[str]] = parseInput("input.in")
     
-    print("PART 1 ->", part1(grid))
+    #print("PART 1 ->", part1(copy.deepcopy(grid)))
+    print("PART 2 ->", part2(copy.deepcopy(grid)))
 
 def part1(grid: list[list[str]]):
     sands = 0
     SOURCE_INDEX = grid[0].index("+")
     
     while True:
+        if grid[1][SOURCE_INDEX] == "o" and grid[1][SOURCE_INDEX-1] == "o" and grid[1][SOURCE_INDEX+1] == "o":
+            sands += 1
+            break
+
         # (row, col)
-        sand_coord = [1, SOURCE_INDEX]
+        sand_coord = [0, SOURCE_INDEX]
 
         infiniteLoop = False
         
@@ -99,16 +105,15 @@ def part1(grid: list[list[str]]):
                     sand_coord = [sand_row+1, sand_col+1]
                     moved = True
             
-
             # Break out
             if sand_row == len(grid)-1 or \
                (sand_col == 0 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col+1] != " ")) or \
                (sand_col == len(grid[0])-1 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col-1] != " ")):
-               #print("WE BREAKIN CUH")
                 infiniteLoop = True
                 break
             
             if not moved: break
+
 
         # Check if sands are within bounds
         if infiniteLoop: break
@@ -116,8 +121,31 @@ def part1(grid: list[list[str]]):
 
     return sands
 
-def part2():
-    pass
+def part2(grid: list[list[str]]):
+    # Add 2 rows
+    grid.append([' ' for c in grid[0]])
+    grid.append(['#' for c in grid[0]])
+
+    # Adjust cols
+    SOURCE_INDEX = grid[0].index("+")
+    REQUIRED_RADIUS = len(grid)-1
+    # Prepend
+    if SOURCE_INDEX - REQUIRED_RADIUS < 0:
+        for row in grid:
+            for _ in range(REQUIRED_RADIUS - SOURCE_INDEX + 2):
+                row.insert(0, " ")
+
+    SOURCE_INDEX = grid[0].index("+")
+    END_INDEX = len(grid[0])
+    if SOURCE_INDEX + REQUIRED_RADIUS > END_INDEX:
+        for row in grid:
+            for _ in range((SOURCE_INDEX + REQUIRED_RADIUS) - END_INDEX + 2):
+                row.append(" ")
+    
+    # Draw floor
+    grid[len(grid)-1] = ["#" for _ in grid[0]]
+
+    return part1(grid)
 
 if __name__ == "__main__":
     solve()
