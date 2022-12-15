@@ -1,3 +1,4 @@
+import os, time
 
 def parseInput(fName="input.in"):
     rdata = open(fName, "r").read().splitlines()
@@ -54,19 +55,66 @@ def parseInput(fName="input.in"):
             elif y1 == y2:
                 # Horizontal Line
                 for col in range(min(x1, x2), max(x1, x2)+1):
-                    try:
-                        grid[y1][col] = "#"
-                    except:
-                        pass
-
-    return rdata
+                    grid[y1][col] = "#"
+                    
+    return grid
 
 def solve():
-    data = parseInput("sample.in")
+    grid: list[list[str]] = parseInput("sample.in")
     
+    print("PART 1 ->", part1(grid))
 
-def part1():
-    pass 
+def part1(grid: list[list[str]]):
+    sands = 0
+    SOURCE_INDEX = grid[0].index("+")
+    
+    while True:
+        # (row, col)
+        sand_coord = [1, SOURCE_INDEX]
+
+        infiniteLoop = False
+        
+        while True:
+            sand_row = sand_coord[0]
+            sand_col = sand_coord[1]
+            moved = False
+            # Check if we can move downward
+            if (sand_row+1 < len(grid)):
+                # Move downward
+                if  grid[sand_row+1][sand_col] == " ":
+                    grid[sand_row][sand_col] = " "
+                    grid[sand_row+1][sand_col] = "o"
+                    sand_coord = [sand_row+1, sand_col]
+                    moved = True
+                # Move left downward
+                elif sand_col - 1 >= 0 and grid[sand_row+1][sand_col-1] == " ":
+                    grid[sand_row][sand_col] = " "
+                    grid[sand_row+1][sand_col-1] = "o"
+                    sand_coord = [sand_row+1, sand_col-1]
+                    moved = True
+                # Move right downward
+                elif sand_col + 1 < len(grid[0]) and grid[sand_row+1][sand_col+1] == " ":
+                    grid[sand_row][sand_col] = " "
+                    grid[sand_row+1][sand_col+1] = "o"
+                    sand_coord = [sand_row+1, sand_col+1]
+                    moved = True
+            
+
+            # Break out
+            if sand_row == len(grid)-1 or \
+               (sand_col == 0 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col+1] != " ")) or \
+               (sand_col == len(grid[0])-1 and (grid[sand_row+1][sand_col] != " " or grid[sand_row+1][sand_col-1] != " ")):
+               #print("WE BREAKIN CUH")
+                infiniteLoop = True
+                break
+            
+            if not moved: break
+
+        # Check if sands are within bounds
+        if infiniteLoop: break
+        sands += 1
+
+    return sands
 
 def part2():
     pass
