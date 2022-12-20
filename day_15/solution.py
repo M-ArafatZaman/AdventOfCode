@@ -1,4 +1,5 @@
 import sys
+import time
 import matplotlib.pyplot as plt
 from collections import deque
 
@@ -25,15 +26,15 @@ def solve():
         file = sys.argv[1] + ".in"
     sensors, beacons = parseInput(file)
 
-    print("PART 1 ->", generateNonBeaconPositions(sensors, beacons, 2000000))
+    print("PART 1 ->", part1(sensors, beacons))
 
 # Calculate the manhattan distance between two numbers
 def manhattanDistance(a: complex, b: complex) -> int:
     return int(abs(a.real - b.real) + abs(a.imag - b.imag))
 
 # Generate the non beacon positions at Y = POS
-def generateNonBeaconPositions(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], Y: int):
-    nonPos: set[complex] = set()
+def generateNonBeaconIntervals(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], Y: int):
+    intervals: list[tuple[int, int]] = []
 
     # Iterate through each sensors and calculate the manhattan distance
     for i in range(len(sensors)):
@@ -41,24 +42,47 @@ def generateNonBeaconPositions(sensors: list[tuple[int, int]], beacons: list[tup
         dist = manhattanDistance(sen, bea)
 
         # If the sensor range crosses the target Y-axis
-        # Use BFS to expand the NON pos positions with the sensor pos X at Y-axis as the starting point
+        # Append the interval at which where no beacon pos is possible
         if abs(Y - sen.imag) <= dist:
             yRadius = int(dist - abs(Y - sen.imag))
-            for x in range(int(sen.real - yRadius), int(sen.real + yRadius) + 1):
-                if (x + Y*1j) not in nonPos:
-                    nonPos.add( x + Y*1j ) 
+            intervals.append([sen.real-yRadius, sen.real+yRadius])
+
+    intervals.sort()
+
+    mergedIntervals: list[tuple[int, int]] = []
+    mergedIntervals.append(intervals[0])
     
-    # Remove all beacon and sensor positions
-    for i in range(len(sensors)):
-        sen, bea = [i[0]+i[1]*1j for i in  (sensors[i], beacons[i])]
+    # Merge intervals
+    for i in range(1, len(intervals)):
+        prev = mergedIntervals[-1]
+        curr = intervals[i]
 
-        if sen in nonPos:
-            nonPos.remove(sen)
-        if bea in nonPos:
-            nonPos.remove(bea)
+        # If the current lower bound is less than the previous upper bound, merge
+        if curr[0] <= prev[1]:
+            mergedIntervals[len(mergedIntervals)-1][1] = max(prev[1], curr[1])
+        else:
+            mergedIntervals.append(curr)
 
-    return len(nonPos)
+    # Return interval
+    return mergedIntervals
 
+def part1(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], sample=False):
+    Y = 10 if sample else 2000000
+    
+    interval = generateNonBeaconIntervals(sensors, beacons, Y)
+    
+    pos: set[complex] = set()
+
+    # Create positions
+    for i in interval:
+        for x in range(int(i[0]), int(i[1])+1):
+            pos.add( x + Y*1j )
+    # Remove beacons
+    for i in beacons:
+        if i[1] == Y and (i[0] + i[1]*1j) in pos:
+            pos.remove( i[0] + i[1]*1j)
+
+    return len(pos)
 
 def part2():
     return
