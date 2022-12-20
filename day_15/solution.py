@@ -25,34 +25,11 @@ def solve():
         file = sys.argv[1] + ".in"
     sensors, beacons = parseInput(file)
 
-    generateNonBeaconPositions(sensors, beacons, 2000000)
+    print("PART 1 ->", generateNonBeaconPositions(sensors, beacons, 2000000))
 
 # Calculate the manhattan distance between two numbers
 def manhattanDistance(a: complex, b: complex) -> int:
     return int(abs(a.real - b.real) + abs(a.imag - b.imag))
-
-# BFS expand
-def bfs_expand(nonPos: set[complex], starting_pos: complex, dist: int):
-    DI = [0,1,0,-1]
-    DJ = [1,0,-1,0]
-    nonPos.add(starting_pos)
-
-    visited: set[complex] = set()
-
-    queue: deque[complex] = deque()
-    queue.append(starting_pos)
-    while len(queue) > 0:
-        currPos: complex = queue.popleft()
-        visited.add(currPos)
-        
-        for i in range(4):
-            nextPos = (currPos.real + DI[i]) + ((currPos.imag + DJ[i]) * 1j)
-            
-            if nextPos not in visited and manhattanDistance(nextPos, starting_pos) <= dist:
-                queue.append(nextPos)
-                visited.add(nextPos)
-                nonPos.add(nextPos)
-        
 
 # Generate the non beacon positions at Y = POS
 def generateNonBeaconPositions(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], Y: int):
@@ -80,10 +57,7 @@ def generateNonBeaconPositions(sensors: list[tuple[int, int]], beacons: list[tup
         if bea in nonPos:
             nonPos.remove(bea)
 
-    x = [i.real for i in nonPos]
-    y = [i.imag for i in nonPos]
-
-    print(len(nonPos))
+    return len(nonPos)
 
 
 def part2():
