@@ -25,7 +25,7 @@ def solve():
         file = sys.argv[1] + ".in"
     sensors, beacons = parseInput(file)
 
-    generateNonBeaconPositions(sensors, beacons, 10)
+    generateNonBeaconPositions(sensors, beacons, 2000000)
 
 # Calculate the manhattan distance between two numbers
 def manhattanDistance(a: complex, b: complex) -> int:
@@ -65,31 +65,23 @@ def generateNonBeaconPositions(sensors: list[tuple[int, int]], beacons: list[tup
 
         # If the sensor range crosses the target Y-axis
         # Use BFS to expand the NON pos positions with the sensor pos X at Y-axis as the starting point
-        if abs(Y - sen.imag) < dist:
+        if abs(Y - sen.imag) <= dist:
             yRadius = int(dist - abs(Y - sen.imag))
-            for x in range(int(sen.real - yRadius), int(sen.real + yRadius + 1)):
-                nonPos.add( x + Y*1j ) 
+            for x in range(int(sen.real - yRadius), int(sen.real + yRadius) + 1):
+                if (x + Y*1j) not in nonPos:
+                    nonPos.add( x + Y*1j ) 
     
     # Remove all beacon and sensor positions
     for i in range(len(sensors)):
         sen, bea = [i[0]+i[1]*1j for i in  (sensors[i], beacons[i])]
-        #print(bea)
-        try:
+
+        if sen in nonPos:
             nonPos.remove(sen)
-        except:
-            pass
-        
-        try:
+        if bea in nonPos:
             nonPos.remove(bea)
-        except:
-            pass
-    
-    """ plt.scatter(sx, sy, marker="s", label="Sensor")
-    plt.scatter(x, y, marker="o", label="Range Sensor")
-    plt.legend()
-    ax = plt.gca()
-    ax.set_ylim(ax.get_ylim()[::-1])
-    plt.show() """
+
+    x = [i.real for i in nonPos]
+    y = [i.imag for i in nonPos]
 
     print(len(nonPos))
 
