@@ -1,7 +1,4 @@
 import sys
-import time
-import matplotlib.pyplot as plt
-from collections import deque
 
 def parseInput(fName="input.in"):
     rdata = open(fName, "r").read().splitlines()
@@ -26,13 +23,16 @@ def solve():
         file = sys.argv[1] + ".in"
     sensors, beacons = parseInput(file)
 
-    print("PART 1 ->", part1(sensors, beacons))
+    isSample = True if file == "sample.in" else False
+
+    print("PART 1 ->", part1(sensors, beacons, isSample))
+    print("PART 2 ->", part2(sensors, beacons, isSample))
 
 # Calculate the manhattan distance between two numbers
 def manhattanDistance(a: complex, b: complex) -> int:
     return int(abs(a.real - b.real) + abs(a.imag - b.imag))
 
-# Generate the non beacon positions at Y = POS
+# Generate the non beacon Intervals at Y = POS
 def generateNonBeaconIntervals(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], Y: int):
     intervals: list[tuple[int, int]] = []
 
@@ -84,8 +84,24 @@ def part1(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], sample
 
     return len(pos)
 
-def part2():
-    return
+# Function to get tuning frequency
+def getTuningFrequency(intervals: list[tuple[int, int]], y: int) -> int:
+    # Determine GAP x
+    gap_x = (intervals[1][0] + intervals[0][1])//2
+
+    return (gap_x*4000000) + y
+
+def part2(sensors: list[tuple[int, int]], beacons: list[tuple[int, int]], sample=False):
+    LIMIT = 20 if sample else 4000000
+
+    for y in range(LIMIT+1):
+        intervals = generateNonBeaconIntervals(sensors, beacons, y)
+        if len(intervals) > 1:
+            return getTuningFrequency(intervals, y)
+
+        print("Current: ", y, end="\r")
+
+    return 0
 
 if __name__ == "__main__":
     solve() 
